@@ -1,3 +1,9 @@
+# NeuroCard: Your NeuroCardiac digital twin!
+------
+
+
+
+
 Frontend (React with TypeScript)
 Main Components:
 
