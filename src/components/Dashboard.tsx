@@ -13,9 +13,8 @@ const Dashboard = () => {
       <header className="bg-gray-800 p-4 border-b border-gray-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Brain className="h-8 w-8 text-blue-400" />
-            <Heart className="h-8 w-8 text-red-400" />
-            <h1 className="text-xl font-bold">NeuroCardiac Digital Twin</h1>
+            <img src="https://i.imgur.com/OpEOQQp.png" alt="NeuroCard Logo" className="h-8 w-8" />
+            <h1 className="text-xl font-bold">NeuroCard</h1>
           </div>
           <div className="flex items-center space-x-4">
             <button className="p-2 rounded-full hover:bg-gray-700">
@@ -68,7 +67,7 @@ const Dashboard = () => {
       </main>
 
       <footer className="bg-gray-800 p-2 border-t border-gray-700 text-center text-sm text-gray-400">
-        NeuroCardiac Digital Twin © {new Date().getFullYear()}
+        NeuroCard © {new Date().getFullYear()}
       </footer>
     </div>
   );

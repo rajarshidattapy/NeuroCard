@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useECGData } from '../hooks/useECGData';
 import { useEEGData } from '../hooks/useEEGData';
+import { useGoogleFitData } from '../hooks/useGoogleFitData';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Brain, Heart, Activity } from 'lucide-react';
+import HeartModel from './models/HeartModel';
+import BrainModel from './models/BrainModel';
 
 const DigitalTwin = () => {
   const { ecgData, ecgLoading } = useECGData();
   const { eegData, eegLoading } = useEEGData();
+  const { connected: googleFitConnected } = useGoogleFitData();
   const [activeView, setActiveView] = useState('combined');
+  const [heartRate, setHeartRate] = useState(75); // Default heart rate
 
   // Mock data for initial display
   const [mockData, setMockData] = useState<any[]>([]);
@@ -51,12 +56,22 @@ const DigitalTwin = () => {
       });
     }, 100);
 
-    return () => clearInterval(interval);
+    // Simulate heart rate updates from Google Fit
+    const heartRateInterval = setInterval(() => {
+      // Simulate heart rate between 65-85 bpm with some variation
+      const newHeartRate = 75 + Math.sin(Date.now() * 0.001) * 10 + (Math.random() * 5 - 2.5);
+      setHeartRate(Math.round(newHeartRate));
+    }, 2000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(heartRateInterval);
+    };
   }, []);
 
   return (
     <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">Digital Twin Visualization</h2>
         <div className="flex space-x-2">
           <button 
@@ -83,13 +98,13 @@ const DigitalTwin = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2 flex items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+        <div className="bg-gray-800 p-3 rounded-lg">
+          <h3 className="text-lg font-semibold mb-1 flex items-center">
             <Heart className="h-5 w-5 text-red-400 mr-2" />
             ECG Signal
           </h3>
-          <div className="h-64">
+          <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={mockData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#444" />
@@ -103,12 +118,12 @@ const DigitalTwin = () => {
           </div>
         </div>
 
-        <div className="bg-gray-800 p-4 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2 flex items-center">
+        <div className="bg-gray-800 p-3 rounded-lg">
+          <h3 className="text-lg font-semibold mb-1 flex items-center">
             <Brain className="h-5 w-5 text-blue-400 mr-2" />
             EEG Signal
           </h3>
-          <div className="h-64">
+          <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={mockData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#444" />
@@ -123,19 +138,69 @@ const DigitalTwin = () => {
         </div>
       </div>
 
-      <div className="bg-gray-800 p-4 rounded-lg flex-1">
-        <h3 className="text-lg font-semibold mb-2">3D Visualization</h3>
-        <div className="flex items-center justify-center h-full bg-gray-900 rounded-lg">
-          <div className="text-center">
-            <p className="text-gray-400 mb-2">3D model visualization will be implemented here</p>
-            <div className="flex justify-center space-x-4">
-              <div className="flex flex-col items-center">
-                <Brain className="h-16 w-16 text-blue-400" />
-                <span className="mt-2">Brain</span>
+      <div className="bg-gray-800 p-4 rounded-lg flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="flex flex-col">
+          <h3 className="text-lg font-semibold mb-2 flex items-center">
+            <Heart className="h-5 w-5 text-red-400 mr-2" />
+            Heart Visualization
+            {googleFitConnected && (
+              <span className="ml-2 text-sm bg-blue-900 text-blue-300 px-2 py-1 rounded">
+                HR: {heartRate} BPM
+              </span>
+            )}
+          </h3>
+          <div className="bg-gray-900 rounded-lg flex-1 overflow-hidden relative">
+            <HeartModel heartRate={heartRate} />
+            
+            <div className="absolute top-2 left-2 bg-gray-800 bg-opacity-70 p-2 rounded text-xs">
+              <div className="flex items-center mb-1">
+                <div className="w-3 h-3 bg-red-500 rounded-full mr-1"></div>
+                <span>Left Ventricle</span>
               </div>
-              <div className="flex flex-col items-center">
-                <Heart className="h-16 w-16 text-red-400" />
-                <span className="mt-2">Heart</span>
+              <div className="flex items-center mb-1">
+                <div className="w-3 h-3 bg-red-700 rounded-full mr-1"></div>
+                <span>Right Ventricle</span>
+              </div>
+              <div className="flex items-center mb-1">
+                <div className="w-3 h-3 bg-blue-500 rounded-full mr-1"></div>
+                <span>Left Atrium</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-blue-700 rounded-full mr-1"></div>
+                <span>Right Atrium</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="flex flex-col">
+          <h3 className="text-lg font-semibold mb-2 flex items-center">
+            <Brain className="h-5 w-5 text-blue-400 mr-2" />
+            Brain Visualization
+          </h3>
+          <div className="bg-gray-900 rounded-lg flex-1 overflow-hidden relative">
+            <BrainModel />
+            
+            <div className="absolute top-2 left-2 bg-gray-800 bg-opacity-70 p-2 rounded text-xs">
+              <div className="flex items-center mb-1">
+                <div className="w-3 h-3 bg-purple-500 rounded-full mr-1"></div>
+                <span>Frontal Lobe</span>
+              </div>
+              <div className="flex items-center mb-1">
+                <div className="w-3 h-3 bg-blue-500 rounded-full mr-1"></div>
+                <span>Parietal Lobe</span>
+              </div>
+              <div className="flex items-center mb-1">
+                <div className="w-3 h-3 bg-green-500 rounded-full mr-1"></div>
+                <span>Temporal Lobe</span>
+              </div>
+              <div className="flex items-center mb-1">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full mr-1"></div>
+                <span>Occipital Lobe</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-red-500 rounded-full mr-1"></div>
+                <span>Cerebellum</span>
               </div>
             </div>
           </div>
