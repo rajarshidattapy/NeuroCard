@@ -2,6 +2,7 @@
 ----------
 ## Workflow
 -------------
+- ECG detection through google fit api
 - EEG-to-ECG conversion using an equation
 - AI-powered anomaly detection using a trained model
 - LLM-based health alerts and recommendations
