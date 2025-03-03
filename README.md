@@ -10,6 +10,7 @@
 --------
 ## Project Structure
 ---------------
+''
 NeuroCardiac-Digital-Twin/
 │── frontend/                           # React-based UI
 │   ├── public/                         # Static assets (icons, images, etc.)
@@ -63,5 +64,6 @@ NeuroCardiac-Digital-Twin/
 │   ├── .env.example                       # Example environment variables
 │   ├── config.yaml                         # App configurations
 │
+''
 -----------------
 
